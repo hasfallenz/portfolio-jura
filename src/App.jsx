@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Github, 
-  Instagram, 
-  Linkedin, 
-  Mail, 
+import {
+  Github,
+  Instagram,
+  Linkedin,
+  Mail,
   ChevronRight,
   Award,
   ExternalLink,
@@ -12,21 +12,21 @@ import {
 } from 'lucide-react';
 
 const greetings = [
-  { text: "Halo",       bgColor: "#020617", textColor: "#34d399" },
-  { text: "Hello",      bgColor: "#0f172a", textColor: "#60a5fa" },
-  { text: "Hola",       bgColor: "#09090b", textColor: "#fb7185" },
-  { text: "Bonjour",    bgColor: "#171717", textColor: "#fbbf24" },
-  { text: "Ciao",       bgColor: "#0c0a09", textColor: "#2dd4bf" },
+  { text: "Halo", bgColor: "#020617", textColor: "#34d399" },
+  { text: "Hello", bgColor: "#0f172a", textColor: "#60a5fa" },
+  { text: "Hola", bgColor: "#09090b", textColor: "#fb7185" },
+  { text: "Bonjour", bgColor: "#171717", textColor: "#fbbf24" },
+  { text: "Ciao", bgColor: "#0c0a09", textColor: "#2dd4bf" },
   { text: "Konnichiwa", bgColor: "#020617", textColor: "#a78bfa" },
-  { text: "Annyeong",   bgColor: "#18181b", textColor: "#f472b6" },
-  { text: "Namaste",    bgColor: "#0a0a0a", textColor: "#fb923c" },
-  { text: "Nǐ Hǎo",     bgColor: "#0f172a", textColor: "#22d3ee" },
-  { text: "Guten Tag",  bgColor: "#1c1917", textColor: "#818cf8" },
-  { text: "Olá",        bgColor: "#020617", textColor: "#10b981" },
-  { text: "Privet",     bgColor: "#0c0a09", textColor: "#f43f5e" },
-  { text: "Marhaban",   bgColor: "#18181b", textColor: "#e11d48" },
-  { text: "Jambo",      bgColor: "#0a0a0a", textColor: "#f59e0b" },
-  { text: "Merhaba",    bgColor: "#0f172a", textColor: "#a855f7" },
+  { text: "Annyeong", bgColor: "#18181b", textColor: "#f472b6" },
+  { text: "Namaste", bgColor: "#0a0a0a", textColor: "#fb923c" },
+  { text: "Nǐ Hǎo", bgColor: "#0f172a", textColor: "#22d3ee" },
+  { text: "Guten Tag", bgColor: "#1c1917", textColor: "#818cf8" },
+  { text: "Olá", bgColor: "#020617", textColor: "#10b981" },
+  { text: "Privet", bgColor: "#0c0a09", textColor: "#f43f5e" },
+  { text: "Marhaban", bgColor: "#18181b", textColor: "#e11d48" },
+  { text: "Jambo", bgColor: "#0a0a0a", textColor: "#f59e0b" },
+  { text: "Merhaba", bgColor: "#0f172a", textColor: "#a855f7" },
 ];
 
 const techSkills = [
@@ -127,16 +127,16 @@ export default function App() {
     if (currentGreetingIndex < greetings.length - 1) {
       const timer = setTimeout(() => {
         setCurrentGreetingIndex(prev => prev + 1);
-      }, 260);
+      }, 170);
       return () => clearTimeout(timer);
     } else {
       const timer = setTimeout(() => {
         setAnimateOut(true);
         const closeTimer = setTimeout(() => {
           setShowSplash(false);
-        }, 1000);
+        }, 800);
         return () => clearTimeout(closeTimer);
-      }, 500);
+      }, 350);
       return () => clearTimeout(timer);
     }
   }, [currentGreetingIndex]);
@@ -188,9 +188,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-400 relative overflow-x-hidden">
-      
+
       {/* SPLASH SCREEN */}
-      <div 
+      <div
         className="fixed inset-0 z-50 flex flex-col items-center justify-center px-4"
         style={{
           backgroundColor: current.bgColor,
@@ -199,8 +199,8 @@ export default function App() {
           pointerEvents: animateOut ? 'none' : 'all',
           visibility: showSplash ? 'visible' : 'hidden',
           transition: animateOut
-            ? 'transform 1.0s cubic-bezier(0.85,0,0.15,1), opacity 1.0s ease'
-            : 'background-color 0.26s ease',
+            ? 'transform 0.8s cubic-bezier(0.85,0,0.15,1), opacity 0.8s ease'
+            : 'background-color 0.17s ease',
           willChange: 'transform',
         }}
       >
@@ -209,7 +209,7 @@ export default function App() {
             className="text-4xl sm:text-5xl md:text-6xl font-black tracking-wider mb-2"
             style={{
               color: current.textColor,
-              transition: 'color 0.26s ease',
+              transition: 'color 0.17s ease',
             }}
           >
             {current.text}
@@ -239,8 +239,8 @@ export default function App() {
                   color: active ? '#0f172a' : '#94a3b8',
                   boxShadow: active ? '0 4px 15px rgba(52,211,153,0.25)' : 'none',
                 }}
-                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = '#fff'; e.currentTarget.style.backgroundColor = 'rgba(51,65,85,0.5)'; }}}
-                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.backgroundColor = 'transparent'; }}}
+                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = '#fff'; e.currentTarget.style.backgroundColor = 'rgba(51,65,85,0.5)'; } }}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.backgroundColor = 'transparent'; } }}
               >
                 {item.label}
               </button>
@@ -294,7 +294,7 @@ export default function App() {
 
         {/* SECTION 1: HOME */}
         <section id="home" className="min-h-[85vh] flex flex-col md:flex-row items-center justify-between py-10 md:py-12 gap-8 md:gap-12">
-          
+
           {/* Photo — on mobile, shown first and smaller */}
           <div className="flex justify-center w-full md:flex-1 md:order-2">
             <div className="relative group">
@@ -316,7 +316,7 @@ export default function App() {
             <div className="space-y-3">
               <h1 className="text-slate-400 font-sans text-base sm:text-xl tracking-wider">Hello, I am</h1>
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
-                ZUFA RAHMAT<br/>
+                ZUFA RAHMAT<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-indigo-400">
                   RAMADHAN
                 </span>
@@ -343,7 +343,7 @@ export default function App() {
                 </a>
               </div>
               <span className="hidden sm:block text-slate-800 font-mono">|</span>
-              <button 
+              <button
                 onClick={() => scrollToSection('contact')}
                 className="flex items-center space-x-2 px-6 py-3.5 bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold rounded-xl tracking-wider text-sm shadow-lg shadow-emerald-400/10 hover:shadow-emerald-400/25 transition-all duration-300 w-full sm:w-auto justify-center"
               >
@@ -357,13 +357,13 @@ export default function App() {
         {/* SECTION 2: ABOUT */}
         <section id="about" className="py-16 md:py-24 border-t border-slate-900">
           <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
-            
+
             <div className="flex justify-center w-full md:flex-1">
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-emerald-500 rounded-3xl blur-2xl opacity-15 group-hover:opacity-30 transition-all duration-500" />
                 <div className="relative w-56 h-72 sm:w-72 sm:h-96 md:w-80 md:h-[420px] bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl hover:border-emerald-500/40 transition-all duration-500">
-                  <img 
-                    src="/image1.png"  
+                  <img
+                    src="/image1.png"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     alt="About"
                   />
@@ -438,20 +438,20 @@ export default function App() {
                       backgroundColor: skill.color,
                     }}
                   />
-                  
+
                   {/* Icon Wrapper */}
-                  <div 
+                  <div
                     className="relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-center transition-all duration-300 group-hover:border-slate-700"
                   >
                     {getSkillIcon(skill.name)}
                   </div>
-                  
+
                   {/* Name and color underline */}
                   <div className="text-center relative z-10 space-y-2">
                     <h4 className="font-extrabold text-white text-sm sm:text-base tracking-wide group-hover:text-emerald-400 transition-colors duration-300">
                       {skill.name}
                     </h4>
-                    <span 
+                    <span
                       className="block mx-auto w-3 h-0.5 rounded-full transition-all duration-300 group-hover:w-10"
                       style={{ backgroundColor: skill.color }}
                     />
@@ -476,9 +476,9 @@ export default function App() {
                   className="group relative bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden aspect-[4/3] flex flex-col items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-lg"
                 >
                   {cert.imageUrl ? (
-                    <img 
-                      src={cert.imageUrl} 
-                      alt={cert.title} 
+                    <img
+                      src={cert.imageUrl}
+                      alt={cert.title}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -508,14 +508,14 @@ export default function App() {
 
           <div className="max-w-3xl mx-auto space-y-6">
             <div className="border-l border-slate-800 pl-5 ml-2 space-y-8 relative">
-              
+
               {[
                 {
-                  title: "Web Developer (Tugas Kampus)",
+                  title: "TUGAS KAMPUS",
                   company: "Laravel + XAMPP",
                   date: "2026",
                   active: true,
-                  desc: "Membuat aplikasi berbasis web untuk mengelola data buku dan peminjaman perpustakaan menggunakan framework Laravel dan web server XAMPP."
+                  desc: "Membuat aplikasi berbasis web untuk mengelola data buku dan peminjaman perpustakaan"
                 },
               ].map((job, i) => (
                 <div key={i} className="relative">
@@ -567,7 +567,7 @@ export default function App() {
         {/* SECTION 5: CONTACT */}
         <section id="contact" className="py-16 md:py-24 border-t border-slate-900">
           <div className="max-w-4xl mx-auto space-y-10 md:space-y-12">
-            
+
             <div className="space-y-3 text-center max-w-2xl mx-auto">
               <span className="text-xs font-mono font-semibold tracking-widest text-emerald-400 uppercase block">Hubungi Saya</span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">Hubungi Saya Kapan Saja</h2>
@@ -577,12 +577,12 @@ export default function App() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              
+
               <a href="https://wa.me/6281385280346" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-emerald-500/20 transition-all duration-300 group">
                 <div className="flex items-center space-x-3 min-w-0">
                   <div className="p-2.5 sm:p-3 bg-emerald-500/10 text-emerald-400 rounded-xl flex-shrink-0">
                     <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 12.008 0c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 12.004-11.95 12.004-.003 0-.005 0-.007 0-2.005-.001-3.975-.51-5.729-1.479L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.966C16.528 1.975 14.061 1.95 11.43 1.95c-5.438 0-9.863 4.374-9.867 9.802 0 1.714.475 3.393 1.374 4.869l-.997 3.64 3.734-.967z"/>
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 12.008 0c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 12.004-11.95 12.004-.003 0-.005 0-.007 0-2.005-.001-3.975-.51-5.729-1.479L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.966C16.528 1.975 14.061 1.95 11.43 1.95c-5.438 0-9.863 4.374-9.867 9.802 0 1.714.475 3.393 1.374 4.869l-.997 3.64 3.734-.967z" />
                     </svg>
                   </div>
                   <div className="min-w-0">
@@ -616,7 +616,7 @@ export default function App() {
                     <span className="text-indigo-400 text-xs font-mono block truncate">hasfallenz12@gmail.com</span>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => handleCopy('hasfallenz12@gmail.com', 'email')}
                   className="text-xs font-mono bg-slate-950 border border-slate-800 hover:border-indigo-500/30 px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all active:scale-95 flex-shrink-0"
                 >
