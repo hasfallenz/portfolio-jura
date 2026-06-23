@@ -20,104 +20,31 @@ const greetings = [
   { text: "Konnichiwa", bgColor: "#020617", textColor: "#a78bfa" },
   { text: "Annyeong",   bgColor: "#18181b", textColor: "#f472b6" },
   { text: "Namaste",    bgColor: "#0a0a0a", textColor: "#fb923c" },
-  { text: "Nǐ Hǎo",    bgColor: "#0f172a", textColor: "#22d3ee" },
+  { text: "Nǐ Hǎo",     bgColor: "#0f172a", textColor: "#22d3ee" },
   { text: "Guten Tag",  bgColor: "#1c1917", textColor: "#818cf8" },
+  { text: "Olá",        bgColor: "#020617", textColor: "#10b981" },
+  { text: "Privet",     bgColor: "#0c0a09", textColor: "#f43f5e" },
+  { text: "Marhaban",   bgColor: "#18181b", textColor: "#e11d48" },
+  { text: "Jambo",      bgColor: "#0a0a0a", textColor: "#f59e0b" },
+  { text: "Merhaba",    bgColor: "#0f172a", textColor: "#a855f7" },
 ];
 
 const techSkills = [
   { name: "React", color: "#61DAFB" },
-  { name: "Node.js", color: "#8CC84B" },
-  { name: "JavaScript", color: "#F7DF1E" },
-  { name: "TypeScript", color: "#3178C6" },
-  { name: "PostgreSQL", color: "#336791" },
+  { name: "Laravel", color: "#FF2D20" },
   { name: "Python", color: "#3776AB" },
-  { name: "Docker", color: "#2496ED" },
-  { name: "Git", color: "#F05032" },
-  { name: "Tailwind CSS", color: "#38BDF8" },
-  { name: "Express.js", color: "#FFFFFF" },
-  { name: "MongoDB", color: "#4DB33D" },
-  { name: "Redis", color: "#DC382D" },
-  { name: "GraphQL", color: "#E10098" },
-  { name: "Linux", color: "#FCC624" },
-  { name: "Figma", color: "#F24E1E" },
   { name: "Next.js", color: "#FFFFFF" },
-  { name: "PHP", color: "#777BB4" },
-  { name: "MySQL", color: "#4479A1" },
+  { name: "Tailwind CSS", color: "#38BDF8" },
+  { name: "Node.js", color: "#8CC84B" },
 ];
 
 const certificates = [
-  {
-    id: 1,
-    title: "Fullstack Web Development",
-    issuer: "Dicoding Indonesia",
-    date: "Januari 2024",
-    credentialId: "XXXXX-XXXXX",
-    color: "from-emerald-500/20 to-teal-500/10",
-    border: "border-emerald-500/30",
-    badge: "bg-emerald-500/10 text-emerald-400",
-    link: "#",
-    icon: "🏆",
-  },
-  {
-    id: 2,
-    title: "React & Redux Developer",
-    issuer: "Udemy",
-    date: "Maret 2023",
-    credentialId: "UC-XXXXXXXX",
-    color: "from-blue-500/20 to-indigo-500/10",
-    border: "border-blue-500/30",
-    badge: "bg-blue-500/10 text-blue-400",
-    link: "#",
-    icon: "⚛️",
-  },
-  {
-    id: 3,
-    title: "Backend Engineering with Node.js",
-    issuer: "Coursera",
-    date: "Juli 2023",
-    credentialId: "CERT-XXXXXXXX",
-    color: "from-violet-500/20 to-purple-500/10",
-    border: "border-violet-500/30",
-    badge: "bg-violet-500/10 text-violet-400",
-    link: "#",
-    icon: "🛠️",
-  },
-  {
-    id: 4,
-    title: "Database Design & PostgreSQL",
-    issuer: "freeCodeCamp",
-    date: "September 2023",
-    credentialId: "FCC-XXXXXXXX",
-    color: "from-amber-500/20 to-orange-500/10",
-    border: "border-amber-500/30",
-    badge: "bg-amber-500/10 text-amber-400",
-    link: "#",
-    icon: "🗄️",
-  },
-  {
-    id: 5,
-    title: "Cloud Fundamentals - AWS",
-    issuer: "Amazon Web Services",
-    date: "November 2023",
-    credentialId: "AWS-XXXXXXXX",
-    color: "from-rose-500/20 to-pink-500/10",
-    border: "border-rose-500/30",
-    badge: "bg-rose-500/10 text-rose-400",
-    link: "#",
-    icon: "☁️",
-  },
-  {
-    id: 6,
-    title: "Docker & Containerization",
-    issuer: "LinkedIn Learning",
-    date: "Februari 2024",
-    credentialId: "LI-XXXXXXXX",
-    color: "from-cyan-500/20 to-sky-500/10",
-    border: "border-cyan-500/30",
-    badge: "bg-cyan-500/10 text-cyan-400",
-    link: "#",
-    icon: "🐳",
-  },
+  { id: 1, title: "Sertifikat 1", imageUrl: "" },
+  { id: 2, title: "Sertifikat 2", imageUrl: "" },
+  { id: 3, title: "Sertifikat 3", imageUrl: "" },
+  { id: 4, title: "Sertifikat 4", imageUrl: "" },
+  { id: 5, title: "Sertifikat 5", imageUrl: "" },
+  { id: 6, title: "Sertifikat 6", imageUrl: "" },
 ];
 
 const doubledSkills = [...techSkills, ...techSkills];
@@ -142,16 +69,16 @@ export default function App() {
     if (currentGreetingIndex < greetings.length - 1) {
       const timer = setTimeout(() => {
         setCurrentGreetingIndex(prev => prev + 1);
-      }, 200);
+      }, 120);
       return () => clearTimeout(timer);
     } else {
       const timer = setTimeout(() => {
         setAnimateOut(true);
         const closeTimer = setTimeout(() => {
           setShowSplash(false);
-        }, 1200);
+        }, 800);
         return () => clearTimeout(closeTimer);
-      }, 600);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [currentGreetingIndex]);
@@ -214,17 +141,17 @@ export default function App() {
           pointerEvents: animateOut ? 'none' : 'all',
           visibility: showSplash ? 'visible' : 'hidden',
           transition: animateOut
-            ? 'transform 1.1s cubic-bezier(0.85,0,0.15,1), opacity 1.1s ease'
-            : 'background-color 0.18s ease',
+            ? 'transform 0.8s cubic-bezier(0.85,0,0.15,1), opacity 0.8s ease'
+            : 'background-color 0.12s ease',
           willChange: 'transform',
         }}
       >
         <div className="text-center">
           <h1
-            className="text-5xl sm:text-6xl md:text-8xl font-black tracking-wider mb-2"
+            className="text-4xl sm:text-5xl md:text-6xl font-black tracking-wider mb-2"
             style={{
               color: current.textColor,
-              transition: 'color 0.18s ease',
+              transition: 'color 0.12s ease',
             }}
           >
             {current.text}
@@ -502,37 +429,24 @@ export default function App() {
               {certificates.map((cert) => (
                 <div
                   key={cert.id}
-                  className={`group relative bg-gradient-to-br ${cert.color} border ${cert.border} rounded-2xl p-4 sm:p-5 flex flex-col gap-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden`}
+                  className="group relative bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden aspect-[4/3] flex flex-col items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-lg"
                 >
-                  <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full border border-white/5 opacity-40" />
-                  <div className="absolute -top-3 -right-3 w-12 h-12 rounded-full border border-white/5 opacity-30" />
-
-                  <div className="flex items-start justify-between">
-                    <span className="text-2xl sm:text-3xl">{cert.icon}</span>
-                    <span className={`text-xs font-mono px-2 py-1 rounded-full ${cert.badge} font-semibold`}>
-                      {cert.date}
-                    </span>
-                  </div>
-
-                  <div className="flex-1 space-y-1">
-                    <h4 className="font-bold text-white text-sm sm:text-base leading-snug">{cert.title}</h4>
-                    <p className="text-xs text-slate-400 font-mono">{cert.issuer}</p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                    <div className="space-y-0.5 min-w-0 mr-2">
-                      <span className="text-[10px] text-slate-500 font-mono uppercase block">Credential ID</span>
-                      <span className="text-xs text-slate-400 font-mono truncate block">{cert.credentialId}</span>
+                  {cert.imageUrl ? (
+                    <img 
+                      src={cert.imageUrl} 
+                      alt={cert.title} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-slate-500 group-hover:text-emerald-400 transition-colors">
+                      <div className="w-12 h-12 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center">
+                        <Award size={24} />
+                      </div>
+                      <span className="text-xs font-mono tracking-wider font-semibold">{cert.title}</span>
                     </div>
-                    <a
-                      href={cert.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors flex-shrink-0"
-                    >
-                      Lihat
-                      <ExternalLink size={12} />
-                    </a>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                    <span className="text-xs font-semibold text-white">{cert.title}</span>
                   </div>
                 </div>
               ))}
@@ -553,25 +467,11 @@ export default function App() {
               
               {[
                 {
-                  title: "Senior Fullstack Developer",
-                  company: "TechLabs Corp • Full-time",
-                  date: "2024 - Sekarang",
+                  title: "Web Developer",
+                  company: "Proyek Mandiri",
+                  date: "2024",
                   active: true,
-                  desc: "Memimpin pengembangan frontend dan backend untuk platform e-commerce dan aplikasi SaaS, meningkatkan kecepatan loading web hingga 40% dan mengoptimalkan query database relasional."
-                },
-                {
-                  title: "Backend Engineer",
-                  company: "Nusa Solusindo • Kontrak",
-                  date: "2022 - 2024",
-                  active: false,
-                  desc: "Merancang, menguji, dan mendokumentasikan API RESTful berperforma tinggi untuk aplikasi keuangan seluler. Berkolaborasi erat dengan tim desainer UI/UX serta tim pengembangan Android/iOS."
-                },
-                {
-                  title: "Fullstack Developer Intern",
-                  company: "Startup Digital Raya • Magang",
-                  date: "2021 - 2022",
-                  active: false,
-                  desc: "Membantu memelihara sistem internal perusahaan, menangani perbaikan bug tampilan front-end, dan menambahkan integrasi sistem pembayaran eksternal."
+                  desc: "Pernah membuat aplikasi berbasis web untuk mengelola data buku dan peminjaman perpustakaan"
                 },
               ].map((job, i) => (
                 <div key={i} className="relative">
