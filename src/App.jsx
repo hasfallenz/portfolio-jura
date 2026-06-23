@@ -511,28 +511,6 @@ export default function App() {
                 <p>{t.aboutP2}</p>
                 <p>{t.aboutP3}</p>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 pt-4 border-t border-slate-900">
-                <div className="space-y-1">
-                  <span className="text-[10px] sm:text-xs text-slate-500 block font-mono">{t.aboutName}</span>
-                  <span className="font-semibold text-slate-200 text-xs sm:text-sm">ZUFA RAHMAT RAMADHAN</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] sm:text-xs text-slate-500 block font-mono">{t.aboutEmail}</span>
-                  <span className="font-semibold text-slate-200 text-xs sm:text-sm break-all">hasfallenz12@gmail.com</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] sm:text-xs text-slate-500 block font-mono">{t.aboutStatus}</span>
-                  <span className="font-semibold text-emerald-400 text-xs sm:text-sm flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-                    {t.aboutStatusVal}
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] sm:text-xs text-slate-500 block font-mono">{t.aboutLocation}</span>
-                  <span className="font-semibold text-slate-200 text-xs sm:text-sm">{t.aboutLocationVal}</span>
-                </div>
-              </div>
             </div>
           </div>
 
