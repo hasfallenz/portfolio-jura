@@ -289,11 +289,11 @@ export default function App() {
       </nav>
 
       {/* MAIN CONTAINER */}
-      {/* pt-16 on mobile (for mobile topbar), pt-28 on md+ (for pill navbar) */}
-      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-20 md:pt-28">
+      {/* pt-24 on mobile (to clear mobile topbar), pt-28 on md+ (for pill navbar) */}
+      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-24 md:pt-28">
 
         {/* SECTION 1: HOME */}
-        <section id="home" className="min-h-[85vh] flex flex-col md:flex-row items-center justify-between py-10 md:py-12 gap-8 md:gap-12">
+        <section id="home" className="min-h-[85vh] flex flex-col md:flex-row items-center justify-center md:justify-between py-8 md:py-12 gap-10 md:gap-12">
 
           {/* Photo — on mobile, shown first and smaller */}
           <div className="flex justify-center w-full md:flex-1 md:order-2">
@@ -302,7 +302,7 @@ export default function App() {
               {/* Mobile: w-48 h-64, larger on sm+, full size on md+ */}
               <div className="relative w-48 h-64 sm:w-64 sm:h-80 md:w-72 md:h-96 lg:w-80 lg:h-[420px] bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl hover:border-emerald-500/40 transition-all duration-500">
                 <img
-                  src="image2.png"
+                  src="/fotohome.png"
                   alt="Zufa Rahmat Ramadhan"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 />
@@ -312,10 +312,10 @@ export default function App() {
           </div>
 
           {/* Text content */}
-          <div className="flex-1 space-y-5 text-center md:text-left md:order-1 w-full">
+          <div className="flex-1 space-y-5 text-center md:text-left md:order-1 w-full mt-4 md:mt-0">
             <div className="space-y-3">
               <h1 className="text-slate-400 font-sans text-base sm:text-xl tracking-wider">Hello, I am</h1>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.25] sm:leading-[1.2] md:leading-tight">
                 ZUFA RAHMAT<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-indigo-400">
                   RAMADHAN
@@ -363,7 +363,7 @@ export default function App() {
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-emerald-500 rounded-3xl blur-2xl opacity-15 group-hover:opacity-30 transition-all duration-500" />
                 <div className="relative w-56 h-72 sm:w-72 sm:h-96 md:w-80 md:h-[420px] bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl hover:border-emerald-500/40 transition-all duration-500">
                   <img
-                    src="/image1.png"
+                    src="/fotoabout.png"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     alt="About"
                   />
