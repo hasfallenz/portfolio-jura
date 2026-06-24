@@ -5,15 +5,13 @@ import {
   Linkedin,
   Mail,
   ChevronRight,
+  ChevronDown,
   Award,
   ExternalLink,
   Menu,
   X,
-  Play,
-  Volume2,
   BookOpen,
   Terminal,
-  Music,
   Check,
   Copy,
   Sparkles,
@@ -49,88 +47,6 @@ const techSkills = [
   { name: "Node.js", color: "#8CC84B", level: "Beginner", desc: "Membuat REST API backend sederhana." },
 ];
 
-// Frequencies for guitar chords
-const guitarChords = {
-  'C': [130.81, 164.81, 196.00, 261.63, 329.63], // C3, E3, G3, C4, E4
-  'G': [98.00, 123.47, 146.83, 196.00, 246.94, 392.00], // G2, B2, D3, G3, B3, G4
-  'Am': [110.00, 164.81, 220.00, 261.63, 329.63], // A2, E3, A3, C4, E4
-  'F': [87.31, 130.81, 174.61, 220.00, 261.63, 349.23], // F2, C3, F3, A3, C4, F4
-  'D': [146.83, 220.00, 293.66, 369.99], // D3, A3, D4, F#4
-  'Em': [82.41, 123.47, 164.81, 196.00, 246.94, 329.63] // E2, B2, E3, G3, B3, E4
-};
-
-// Global AudioContext to prevent context creation limits & click lag bugs
-let globalAudioCtx = null;
-
-const getAudioContext = () => {
-  if (!globalAudioCtx) {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (AudioContext) {
-      globalAudioCtx = new AudioContext();
-    }
-  }
-  if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
-    globalAudioCtx.resume();
-  }
-  return globalAudioCtx;
-};
-
-const playGuitarChord = (chordName) => {
-  const ctx = getAudioContext();
-  if (!ctx) return;
-
-  const freqs = guitarChords[chordName] || [261.63];
-
-  // Strumming simulation: drag pick across strings with a short sequential delay (70ms)
-  freqs.forEach((freq, index) => {
-    const delay = index * 0.07;
-    
-    // Combine two oscillators to enrich the sound texture
-    const osc1 = ctx.createOscillator(); // Warm body
-    const osc2 = ctx.createOscillator(); // String brightness (harmonic component)
-    
-    const gainNode = ctx.createGain();
-    const harmonicGain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-
-    // Fundamental note
-    osc1.type = 'triangle';
-    osc1.frequency.setValueAtTime(freq, ctx.currentTime + delay);
-
-    // 1st Harmonic (double frequency) to simulate string resonance
-    osc2.type = 'sawtooth';
-    osc2.frequency.setValueAtTime(freq * 2, ctx.currentTime + delay);
-    
-    // Lower volume for the harmonic component
-    harmonicGain.gain.setValueAtTime(0.06, ctx.currentTime + delay);
-
-    // Resonant lowpass filter to mimic string dampening
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(2200, ctx.currentTime + delay);
-    filter.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + delay + 1.8);
-
-    // Volume envelope (rapid attack, smooth exponential decay for sustain)
-    gainNode.gain.setValueAtTime(0, ctx.currentTime + delay);
-    gainNode.gain.linearRampToValueAtTime(0.18, ctx.currentTime + delay + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 2.2); // sustain up to 2.2s
-
-    // Connect nodes
-    osc1.connect(filter);
-    osc2.connect(harmonicGain);
-    harmonicGain.connect(filter);
-    
-    filter.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    osc1.start(ctx.currentTime + delay);
-    osc2.start(ctx.currentTime + delay);
-    
-    osc1.stop(ctx.currentTime + delay + 2.4);
-    osc2.stop(ctx.currentTime + delay + 2.4);
-  });
-};
-
-// Users empty project and certificate states as requested
 const projectsData = [];
 const certificatesData = [];
 
@@ -175,11 +91,8 @@ const translations = {
     contactDesc: "Apakah Anda memiliki proyek besar yang ingin dikerjakan bersama, memiliki pertanyaan spesifik, atau ingin membangun kolaborasi yang solid? Silakan hubungi saya melalui media sosial atau chat cepat di bawah.",
     copied: "Tersalin!",
     copy: "Salin",
-    guitarTitle: "🎸 Sudut Gitar Zura",
-    guitarDesc: "Saya suka menyanyi dan main gitar. Coba klik tombol chord di bawah ini untuk mendengar petikan nada gitar virtual secara real-time langsung dari web ini!",
-    guitarInstruction: "Klik chord untuk bersuara:",
     viewDetails: "Lihat Detail",
-    filterAll: "Semua",
+    filterAll: "Semua Kategori",
     statsTitle: "Statistik Portofolio",
     statsProjects: "Proyek Aktif",
     statsCertificates: "Sertifikasi",
@@ -233,11 +146,8 @@ const translations = {
     contactDesc: "Do you have a great project in mind, a specific question, or want to build a solid collaboration? Please contact me through social media or quick chat below.",
     copied: "Copied!",
     copy: "Copy",
-    guitarTitle: "🎸 Zura's Guitar Corner",
-    guitarDesc: "I love singing and playing the guitar. Try clicking the chord buttons below to hear virtual acoustic guitar sounds synthesized in real-time right from your browser!",
-    guitarInstruction: "Click chord to play:",
     viewDetails: "View Details",
-    filterAll: "All",
+    filterAll: "All Categories",
     statsTitle: "Portfolio Stats",
     statsProjects: "Active Projects",
     statsCertificates: "Certifications",
@@ -323,14 +233,14 @@ export default function App() {
 
   // Custom states for premium features
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [activeGuitarChord, setActiveGuitarChord] = useState(null);
   const [projectFilter, setProjectFilter] = useState('All');
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedCertificate, setSelectedCertificate] = useState(null);
-  const [guitarStrumming, setGuitarStrumming] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
   const t = translations[language];
+  const filterRef = useRef(null);
 
   const navItems = [
     { id: 'home', label: t.navHome },
@@ -384,6 +294,13 @@ export default function App() {
       }
     };
 
+    // Close project filter dropdown when clicking outside
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setIsFilterDropdownOpen(false);
+      }
+    };
+
     // Scroll reveal intersection observer
     const observer = new IntersectionObserver(
       (entries) => {
@@ -401,10 +318,12 @@ export default function App() {
 
     window.addEventListener('scroll', handleScrollProgress);
     window.addEventListener('scroll', handleActiveSection);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
       window.removeEventListener('scroll', handleScrollProgress);
       window.removeEventListener('scroll', handleActiveSection);
+      document.removeEventListener('mousedown', handleClickOutside);
       revealElements.forEach((el) => observer.unobserve(el));
     };
   }, []);
@@ -439,16 +358,6 @@ export default function App() {
       showToast(t.copiedToast);
       setTimeout(() => setCopiedText(''), 2000);
     });
-  };
-
-  const triggerGuitarChord = (chord) => {
-    setActiveGuitarChord(chord);
-    setGuitarStrumming(true);
-    playGuitarChord(chord);
-    setTimeout(() => {
-      setActiveGuitarChord(null);
-      setGuitarStrumming(false);
-    }, 1500);
   };
 
   const filteredProjects = projectFilter === 'All' 
@@ -761,58 +670,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* 🎸 GUITAR WIDGET */}
-          <div className="mt-16 glass-panel rounded-3xl p-6 sm:p-8 max-w-4xl mx-auto shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-indigo-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-2 md:max-w-md">
-                <div className="flex items-center gap-2 text-emerald-400">
-                  <Music size={18} />
-                  <h3 className="font-extrabold text-white text-base tracking-wide">{t.guitarTitle}</h3>
-                </div>
-                <p className="text-slate-400 text-xs leading-relaxed">{t.guitarDesc}</p>
-              </div>
-
-              {/* Guitar Deck Chord buttons & Wave simulation */}
-              <div className="flex flex-col items-center gap-4 bg-slate-950/70 border border-slate-900 rounded-2xl p-4 sm:p-5 flex-grow max-w-md w-full">
-                
-                {/* Audio Wave Visualizer Simulation */}
-                <div className="flex items-end justify-center gap-1 h-8 w-full px-4 border-b border-slate-900/60 pb-2">
-                  {[...Array(24)].map((_, i) => (
-                    <span 
-                      key={i}
-                      className="w-1 bg-emerald-400/80 rounded-full transition-all duration-300"
-                      style={{
-                        animation: guitarStrumming ? `wave-bar ${0.3 + (i % 5) * 0.15}s ease-in-out infinite` : 'none',
-                        height: guitarStrumming ? 'auto' : '4px',
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <div className="w-full text-center">
-                  <span className="text-[10px] font-mono font-bold tracking-wider text-slate-500 block mb-2">{t.guitarInstruction}</span>
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                    {Object.keys(guitarChords).map((chord) => (
-                      <button
-                        key={chord}
-                        onClick={() => triggerGuitarChord(chord)}
-                        className={`py-2 px-3 rounded-lg text-xs font-black font-mono border transition-all duration-300 ${
-                          activeGuitarChord === chord
-                            ? 'bg-emerald-400 border-emerald-400 text-slate-950 shadow-md shadow-emerald-400/20 scale-95'
-                            : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-emerald-500/40 hover:text-emerald-400'
-                        }`}
-                      >
-                        {chord}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* TECH SKILLS GRID */}
           <div className="mt-20">
             <div className="text-center mb-10">
@@ -960,28 +817,46 @@ export default function App() {
         {/* ── SECTION 4: PROJECTS ── */}
         <section id="projects" className="py-16 md:py-24 border-t border-slate-900/60 reveal-on-scroll">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-            <div className="space-y-2 text-center md:text-left">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-10">
+            <div className="space-y-2 text-center sm:text-left">
               <span className="text-xs font-mono font-semibold tracking-widest text-emerald-400 uppercase">{t.projSmall}</span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white">{t.projTitle}</h2>
               <p className="text-slate-500 text-xs">{t.projDesc}</p>
             </div>
 
-            {/* Filter Tabs (Interactive) */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 bg-slate-900/75 p-1 rounded-2xl border border-slate-800/80 w-max mx-auto md:mx-0 shadow-lg">
-              {['All', 'React', 'Laravel', 'Python'].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setProjectFilter(cat)}
-                  className={`px-3 py-1.5 rounded-xl text-2xs font-bold uppercase tracking-wider transition-all duration-300 ${
-                    projectFilter === cat
-                      ? 'bg-emerald-400 text-slate-950 font-black shadow-md'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  {cat === 'All' ? t.filterAll : cat}
-                </button>
-              ))}
+            {/* Filter Dropdown (Solves Mobile/Android Overflow Issue) */}
+            <div ref={filterRef} className="relative z-30 mx-auto sm:mx-0">
+              <button
+                onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+                className="flex items-center justify-between gap-2.5 px-4.5 py-2.5 bg-slate-900/80 border border-slate-800 hover:border-emerald-400/40 rounded-xl text-xs font-bold text-slate-200 hover:text-white transition-all shadow-lg min-w-[150px]"
+              >
+                <div className="flex items-center gap-2">
+                  <Filter size={13} className="text-emerald-400" />
+                  <span>{projectFilter === 'All' ? t.filterAll : projectFilter}</span>
+                </div>
+                <ChevronDown size={14} className={`text-slate-500 transition-transform duration-300 ${isFilterDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {isFilterDropdownOpen && (
+                <div className="absolute right-1/2 translate-x-1/2 sm:translate-x-0 sm:right-0 mt-2 w-[160px] bg-slate-900 border border-slate-800/80 rounded-2xl shadow-2xl py-1.5 animate-fade-in border-slate-800">
+                  {['All', 'React', 'Laravel', 'Python'].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        setProjectFilter(cat);
+                        setIsFilterDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4.5 py-2 text-xs font-semibold transition-colors duration-250 hover:bg-slate-800/60 ${
+                        projectFilter === cat 
+                          ? 'text-emerald-400 bg-emerald-500/5' 
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {cat === 'All' ? t.filterAll : cat}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -1118,7 +993,7 @@ export default function App() {
               </p>
             </div>
 
-            {/* Centered layout with contact cards only (No input forms, as requested) */}
+            {/* Centered layout with contact cards only */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
               
               <a href="https://wa.me/6281385280346" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-emerald-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
