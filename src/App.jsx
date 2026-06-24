@@ -59,155 +59,80 @@ const guitarChords = {
   'Em': [82.41, 123.47, 164.81, 196.00, 246.94, 329.63] // E2, B2, E3, G3, B3, E4
 };
 
+// Global AudioContext to prevent context creation limits & click lag bugs
+let globalAudioCtx = null;
+
+const getAudioContext = () => {
+  if (!globalAudioCtx) {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) {
+      globalAudioCtx = new AudioContext();
+    }
+  }
+  if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+    globalAudioCtx.resume();
+  }
+  return globalAudioCtx;
+};
+
 const playGuitarChord = (chordName) => {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return;
-  const ctx = new AudioContext();
+  const ctx = getAudioContext();
+  if (!ctx) return;
 
   const freqs = guitarChords[chordName] || [261.63];
 
+  // Strumming simulation: drag pick across strings with a short sequential delay (70ms)
   freqs.forEach((freq, index) => {
-    const delay = index * 0.05; // 50ms delay for strumming simulation
-    const osc = ctx.createOscillator();
+    const delay = index * 0.07;
+    
+    // Combine two oscillators to enrich the sound texture
+    const osc1 = ctx.createOscillator(); // Warm body
+    const osc2 = ctx.createOscillator(); // String brightness (harmonic component)
+    
     const gainNode = ctx.createGain();
+    const harmonicGain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
 
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+    // Fundamental note
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(freq, ctx.currentTime + delay);
 
+    // 1st Harmonic (double frequency) to simulate string resonance
+    osc2.type = 'sawtooth';
+    osc2.frequency.setValueAtTime(freq * 2, ctx.currentTime + delay);
+    
+    // Lower volume for the harmonic component
+    harmonicGain.gain.setValueAtTime(0.06, ctx.currentTime + delay);
+
+    // Resonant lowpass filter to mimic string dampening
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(1200, ctx.currentTime + delay);
-    filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + delay + 1.2);
+    filter.frequency.setValueAtTime(2200, ctx.currentTime + delay);
+    filter.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + delay + 1.8);
 
+    // Volume envelope (rapid attack, smooth exponential decay for sustain)
     gainNode.gain.setValueAtTime(0, ctx.currentTime + delay);
-    gainNode.gain.linearRampToValueAtTime(0.25, ctx.currentTime + delay + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 1.4);
+    gainNode.gain.linearRampToValueAtTime(0.18, ctx.currentTime + delay + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 2.2); // sustain up to 2.2s
 
-    osc.connect(filter);
+    // Connect nodes
+    osc1.connect(filter);
+    osc2.connect(harmonicGain);
+    harmonicGain.connect(filter);
+    
     filter.connect(gainNode);
     gainNode.connect(ctx.destination);
 
-    osc.start(ctx.currentTime + delay);
-    osc.stop(ctx.currentTime + delay + 1.5);
+    osc1.start(ctx.currentTime + delay);
+    osc2.start(ctx.currentTime + delay);
+    
+    osc1.stop(ctx.currentTime + delay + 2.4);
+    osc2.stop(ctx.currentTime + delay + 2.4);
   });
 };
 
-const projectsData = [
-  {
-    id: 1,
-    title: {
-      ID: "BookVerse - Sistem Perpustakaan",
-      EN: "BookVerse - Library System"
-    },
-    desc: {
-      ID: "Sistem manajemen buku dan peminjaman perpustakaan berbasis web dengan dashboard admin informatif.",
-      EN: "Web-based library loan and book management system with an informative admin dashboard."
-    },
-    longDesc: {
-      ID: "BookVerse dirancang untuk merapikan pencatatan manual perpustakaan kampus. Menggunakan Laravel sebagai backend API MVC yang kokoh dan database MySQL di XAMPP. Fitur utamanya mencakup autentikasi hak akses admin/anggota, pencarian katalog cerdas, manajemen stok buku dinamis, denda keterlambatan pengembalian otomatis, serta pembuatan laporan bulanan.",
-      EN: "BookVerse is designed to organize manual library logs. Built on Laravel as a robust MVC backend API and MySQL database hosted in XAMPP. Key features include role-based auth (admin/member), smart catalog search, dynamic inventory management, automatic late return fee calculation, and monthly PDF reports."
-    },
-    tags: ["Laravel", "XAMPP", "Bootstrap", "MySQL"],
-    demoUrl: "#",
-    githubUrl: "https://github.com",
-    stats: { ID: "Dipakai oleh 150+ Mahasiswa", EN: "Used by 150+ Students" },
-    category: "Laravel",
-    mockupType: "library"
-  },
-  {
-    id: 2,
-    title: {
-      ID: "Zenith - Audio Streamer",
-      EN: "Zenith - Audio Streamer"
-    },
-    desc: {
-      ID: "Aplikasi streaming musik modern dengan visualizer gelombang audio Canvas interaktif secara real-time.",
-      EN: "Modern music streaming application featuring an interactive real-time Canvas audio visualizer."
-    },
-    longDesc: {
-      ID: "Zenith adalah pemutar audio web premium yang didesain khusus untuk pecinta musik. Dikembangkan menggunakan React dan Web Audio API untuk menghasilkan manipulasi filter suara secara real-time. Aplikasi ini memiliki audio visualizer berbasis Canvas, kontrol EQ kustom, spatial panning, dan penyimpanan offline playlist lagu menggunakan IndexedDB.",
-      EN: "Zenith is a premium web audio player custom-designed for music lovers. Developed with React and Web Audio API to enable real-time sound filter adjustments. It comes with a canvas-based visualizer, custom EQ controls, spatial panning, and offline playlist management via IndexedDB."
-    },
-    tags: ["React", "Tailwind CSS", "Web Audio API", "Vite"],
-    demoUrl: "#",
-    githubUrl: "https://github.com",
-    stats: { ID: "Audio Visualizer Real-time", EN: "Real-time Audio Visualizer" },
-    category: "React",
-    mockupType: "music"
-  },
-  {
-    id: 3,
-    title: {
-      ID: "SentimentAI - Analisis Ulasan",
-      EN: "SentimentAI - Sentiment Analysis"
-    },
-    desc: {
-      ID: "Program Python NLP untuk mendeteksi sentimen ulasan produk e-commerce secara otomatis.",
-      EN: "Python NLP script to automatically detect and classify e-commerce product review sentiments."
-    },
-    longDesc: {
-      ID: "SentimentAI adalah script otomasi analisis teks menggunakan pustaka NLTK dan TextBlob di Python. Program ini mampu menyaring ribuan data ulasan pembeli dari file CSV, mengategorikannya ke dalam kelompok Positif, Netral, atau Negatif, mendeteksi tingkat keakuratan opini, serta mengekspor analisis visual berupa grafik statistika lewat Matplotlib dan Seaborn.",
-      EN: "SentimentAI is a text analysis automation script powered by Python's NLTK and TextBlob. It parses thousands of buyer reviews from CSV files, classifies them into Positive, Neutral, or Negative categories, measures confidence scores, and exports visual metrics charts via Matplotlib and Seaborn."
-    },
-    tags: ["Python", "NLP", "Pandas", "Matplotlib"],
-    demoUrl: "#",
-    githubUrl: "https://github.com",
-    stats: { ID: "Akurasi Klasifikasi 92%", EN: "92% Classification Accuracy" },
-    category: "Python",
-    mockupType: "ai"
-  }
-];
-
-const certificatesData = [
-  {
-    id: 1,
-    title: {
-      ID: "Belajar Dasar Pemrograman JavaScript",
-      EN: "Learn Basic JavaScript Programming"
-    },
-    issuer: "Dicoding Indonesia",
-    date: "2025",
-    credentialId: "DSC-JS-991823",
-    skills: ["JavaScript ES6", "Logical Thinking", "OOP Principles"],
-    color: "#fbbf24"
-  },
-  {
-    id: 2,
-    title: {
-      ID: "Pengembangan Aplikasi Web Laravel",
-      EN: "Laravel Web Application Development"
-    },
-    issuer: "Skillvul - Kampus Merdeka",
-    date: "2026",
-    credentialId: "SKV-LV-882739",
-    skills: ["Laravel MVC", "Database Migration", "RESTful API"],
-    color: "#f43f5e"
-  },
-  {
-    id: 3,
-    title: {
-      ID: "Python untuk Analisis Data & Sains",
-      EN: "Python for Data Analysis & Science"
-    },
-    issuer: "Coursera - IBM Academic",
-    date: "2025",
-    credentialId: "IBM-PY-773641",
-    skills: ["Python Pandas", "Data Cleaning", "Matplotlib Charts"],
-    color: "#3b82f6"
-  },
-  {
-    id: 4,
-    title: {
-      ID: "Responsive Web Design Certification",
-      EN: "Responsive Web Design Certification"
-    },
-    issuer: "freeCodeCamp Academy",
-    date: "2024",
-    credentialId: "FCC-HTML-55610",
-    skills: ["HTML5 Semantic", "CSS Grid & Flexbox", "Web Accessibility"],
-    color: "#10b981"
-  }
-];
+// Users empty project and certificate states as requested
+const projectsData = [];
+const certificatesData = [];
 
 const translations = {
   ID: {
@@ -236,7 +161,7 @@ const translations = {
     techDesc: "Kumpulan teknologi modern yang aktif saya gunakan dalam membangun aplikasi",
     certSmall: "Pencapaian",
     certTitle: "Sertifikasi & Lisensi",
-    certDesc: "Sertifikat yang telah saya raih dalam perjalanan belajar (Klik untuk detail)",
+    certDesc: "Sertifikat yang telah saya raih dalam perjalanan belajar",
     certTitlePrefix: "Sertifikat",
     expSmall: "Perjalanan Karir",
     expTitle: "Riwayat Pengalaman",
@@ -264,14 +189,9 @@ const translations = {
     closeBtn: "Tutup",
     githubBtn: "Lihat Kode",
     demoBtn: "Kunjungi Web",
-    contactNamePlaceholder: "Nama Lengkap Anda",
-    contactEmailPlaceholder: "Alamat Email Anda",
-    contactMessagePlaceholder: "Tulis pesan atau pertanyaan Anda di sini...",
-    contactSubmitBtn: "Kirim Pesan",
-    contactSendingBtn: "Mengirim...",
-    contactSuccessTitle: "Pesan Terkirim!",
-    contactSuccessDesc: "Terima kasih banyak! Pesan Anda telah berhasil disimpan ke database lokal browser (localStorage). Saya akan segera membalas lewat kontak Anda.",
-    copiedToast: "Email berhasil disalin ke papan klip!"
+    copiedToast: "Email berhasil disalin ke papan klip!",
+    emptyCertificates: "Belum ada sertifikasi atau lisensi saat ini.",
+    emptyProjects: "Belum ada proyek pilihan saat ini."
   },
   EN: {
     navHome: "Home",
@@ -299,7 +219,7 @@ const translations = {
     techDesc: "A collection of modern technologies I actively use in building applications",
     certSmall: "Achievements",
     certTitle: "Certifications & Licenses",
-    certDesc: "Certificates I have earned during my learning journey (Click to view)",
+    certDesc: "Certificates I have earned during my learning journey",
     certTitlePrefix: "Certificate",
     expSmall: "Career Journey",
     expTitle: "Work Experience",
@@ -327,14 +247,9 @@ const translations = {
     closeBtn: "Close",
     githubBtn: "View Code",
     demoBtn: "Visit Live Web",
-    contactNamePlaceholder: "Your Full Name",
-    contactEmailPlaceholder: "Your Email Address",
-    contactMessagePlaceholder: "Write your message or inquiry here...",
-    contactSubmitBtn: "Send Message",
-    contactSendingBtn: "Sending...",
-    contactSuccessTitle: "Message Sent!",
-    contactSuccessDesc: "Thank you so much! Your message has been successfully saved to the browser's local database (localStorage). I will contact you back shortly.",
-    copiedToast: "Email copied to clipboard successfully!"
+    copiedToast: "Email copied to clipboard successfully!",
+    emptyCertificates: "No certifications or licenses available at the moment.",
+    emptyProjects: "No selected projects available at the moment."
   }
 };
 
@@ -414,11 +329,6 @@ export default function App() {
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [guitarStrumming, setGuitarStrumming] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
-
-  // Form states
-  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
-  const [contactSubmitStatus, setContactSubmitStatus] = useState('idle'); // idle, sending, success
-  const [contactSuccessData, setContactSuccessData] = useState(null);
 
   const t = translations[language];
 
@@ -539,29 +449,6 @@ export default function App() {
       setActiveGuitarChord(null);
       setGuitarStrumming(false);
     }, 1500);
-  };
-
-  const handleContactSubmit = (e) => {
-    e.preventDefault();
-    if (!contactForm.name || !contactForm.email || !contactForm.message) return;
-
-    setContactSubmitStatus('sending');
-
-    // Simulate database delay of 1.5s
-    setTimeout(() => {
-      const submissions = JSON.parse(localStorage.getItem('portfolio_messages') || '[]');
-      const newSubmission = {
-        ...contactForm,
-        id: Date.now(),
-        date: new Date().toLocaleString()
-      };
-      submissions.push(newSubmission);
-      localStorage.setItem('portfolio_messages', JSON.stringify(submissions));
-
-      setContactSuccessData(newSubmission);
-      setContactSubmitStatus('success');
-      setContactForm({ name: '', email: '', message: '' });
-    }, 1200);
   };
 
   const filteredProjects = projectFilter === 'All' 
@@ -791,24 +678,24 @@ export default function App() {
         {/* ── STATS COUNTER ── */}
         <section className="py-10 border-t border-slate-900/60 reveal-on-scroll">
           <div className="glass-panel rounded-3xl p-6 sm:p-8 max-w-4xl mx-auto shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl" />
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
             <h3 className="text-xs font-mono font-bold tracking-widest text-slate-500 uppercase text-center mb-6">{t.statsTitle}</h3>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div className="space-y-1.5">
-                <span className="block text-2xl sm:text-3xl font-black text-emerald-400 font-mono">3+</span>
+                <span className="block text-2xl sm:text-3xl font-black text-emerald-400 font-mono">0</span>
                 <span className="block text-xs text-slate-400 font-semibold">{t.statsProjects}</span>
               </div>
-              <div className="space-y-1.5 border-l border-slate-800/60">
-                <span className="block text-2xl sm:text-3xl font-black text-indigo-400 font-mono">4+</span>
+              <div className="space-y-1.5 md:border-l md:border-slate-800/60">
+                <span className="block text-2xl sm:text-3xl font-black text-indigo-400 font-mono">0</span>
                 <span className="block text-xs text-slate-400 font-semibold">{t.statsCertificates}</span>
               </div>
-              <div className="space-y-1.5 border-l border-slate-800/60">
+              <div className="space-y-1.5 md:border-l md:border-slate-800/60">
                 <span className="block text-2xl sm:text-3xl font-black text-violet-400 font-mono">5</span>
                 <span className="block text-xs text-slate-400 font-semibold">{t.statsSemesters}</span>
               </div>
-              <div className="space-y-1.5 border-l border-slate-800/60 font-mono">
-                <span className="block text-2xl sm:text-3xl font-black text-teal-400 font-mono">150+</span>
+              <div className="space-y-1.5 md:border-l md:border-slate-800/60 font-mono">
+                <span className="block text-2xl sm:text-3xl font-black text-teal-400 font-mono">0</span>
                 <span className="block text-xs text-slate-400 font-semibold">{t.statsCommits}</span>
               </div>
             </div>
@@ -874,7 +761,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* 🎸 GUITAR WIDGET (PREMIUM FEATURE) */}
+          {/* 🎸 GUITAR WIDGET */}
           <div className="mt-16 glass-panel rounded-3xl p-6 sm:p-8 max-w-4xl mx-auto shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-indigo-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
             
@@ -980,38 +867,48 @@ export default function App() {
               <p className="text-slate-500 text-xs mt-2">{t.certDesc}</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {certificatesData.map((cert) => (
-                <div
-                  key={cert.id}
-                  onClick={() => setSelectedCertificate(cert)}
-                  className="group relative bg-slate-900/35 border border-slate-900 hover:border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 shadow-md cursor-pointer hover:shadow-xl hover:shadow-black/30"
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div 
-                        className="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-950 border border-slate-800 transition-colors group-hover:border-slate-700"
-                        style={{ color: cert.color }}
-                      >
-                        <Award size={18} />
+            {/* Clear Placeholder when certificates are empty */}
+            {certificatesData.length === 0 ? (
+              <div className="text-center py-12 px-6 border border-dashed border-slate-800 rounded-3xl max-w-md mx-auto bg-slate-900/10">
+                <Award className="mx-auto text-slate-700 mb-3" size={32} />
+                <p className="text-xs text-slate-500 font-mono tracking-wider">
+                  {t.emptyCertificates}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {certificatesData.map((cert) => (
+                  <div
+                    key={cert.id}
+                    onClick={() => setSelectedCertificate(cert)}
+                    className="group relative bg-slate-900/35 border border-slate-900 hover:border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 shadow-md cursor-pointer hover:shadow-xl hover:shadow-black/30"
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div 
+                          className="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-950 border border-slate-800 transition-colors group-hover:border-slate-700"
+                          style={{ color: cert.color }}
+                        >
+                          <Award size={18} />
+                        </div>
+                        <span className="text-[10px] font-mono font-bold text-slate-500 bg-slate-950/50 px-2 py-1 rounded-full">{cert.date}</span>
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-slate-500 bg-slate-950/50 px-2 py-1 rounded-full">{cert.date}</span>
+                      <div className="space-y-1">
+                        <h4 className="font-extrabold text-white text-xs sm:text-sm tracking-wide leading-snug group-hover:text-emerald-400 transition-colors duration-300">
+                          {language === 'ID' ? cert.title.ID : cert.title.EN}
+                        </h4>
+                        <p className="text-[10px] text-slate-400 font-medium">{cert.issuer}</p>
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <h4 className="font-extrabold text-white text-xs sm:text-sm tracking-wide leading-snug group-hover:text-emerald-400 transition-colors duration-300">
-                        {language === 'ID' ? cert.title.ID : cert.title.EN}
-                      </h4>
-                      <p className="text-[10px] text-slate-400 font-medium">{cert.issuer}</p>
-                    </div>
-                  </div>
 
-                  <div className="pt-4 mt-4 border-t border-slate-950/50 flex items-center justify-between text-[9px] font-mono text-slate-500">
-                    <span>ID: {cert.credentialId}</span>
-                    <span className="text-emerald-400 group-hover:underline">{t.viewDetails} →</span>
+                    <div className="pt-4 mt-4 border-t border-slate-950/50 flex items-center justify-between text-[9px] font-mono text-slate-500">
+                      <span>ID: {cert.credentialId}</span>
+                      <span className="text-emerald-400 group-hover:underline">{t.viewDetails} →</span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -1088,124 +985,130 @@ export default function App() {
             </div>
           </div>
 
-          {/* Projects Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredProjects.map((proj) => (
-              <div 
-                key={proj.id} 
-                className="group bg-slate-900/30 border border-slate-900 hover:border-slate-800 rounded-2xl p-4.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-xl hover:shadow-black/45"
-              >
-                <div>
-                  {/* Beautiful Simulated Tech Mockup instead of broken image placeholders */}
-                  <div className="w-full h-36 bg-slate-950 rounded-xl mb-4 overflow-hidden border border-slate-800/60 relative flex flex-col items-center justify-center p-3 select-none">
-                    
-                    {/* Mockup visual patterns */}
-                    {proj.mockupType === 'library' && (
-                      <div className="w-full h-full flex flex-col justify-between text-[8px] font-mono text-emerald-400">
-                        <div className="flex items-center justify-between border-b border-emerald-950 pb-1">
-                          <span>📦 BookVerse v1.0</span>
-                          <span className="text-2xs text-indigo-400">ADMIN PANEL</span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-1 my-1">
-                          <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
-                            <span className="block text-slate-500">Books</span>
-                            <span className="text-white font-bold">482</span>
+          {/* Clear Placeholder when projects are empty */}
+          {filteredProjects.length === 0 ? (
+            <div className="text-center py-16 px-6 border border-dashed border-slate-800 rounded-3xl max-w-xl mx-auto bg-slate-900/10 w-full">
+              <Code className="mx-auto text-slate-700 mb-3" size={36} />
+              <p className="text-xs text-slate-500 font-mono tracking-wider">
+                {t.emptyProjects}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredProjects.map((proj) => (
+                <div 
+                  key={proj.id} 
+                  className="group bg-slate-900/30 border border-slate-900 hover:border-slate-800 rounded-2xl p-4.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-xl hover:shadow-black/45"
+                >
+                  <div>
+                    {/* Visual mockup graphics */}
+                    <div className="w-full h-36 bg-slate-950 rounded-xl mb-4 overflow-hidden border border-slate-800/60 relative flex flex-col items-center justify-center p-3 select-none">
+                      
+                      {proj.mockupType === 'library' && (
+                        <div className="w-full h-full flex flex-col justify-between text-[8px] font-mono text-emerald-400">
+                          <div className="flex items-center justify-between border-b border-emerald-950 pb-1">
+                            <span>📦 BookVerse v1.0</span>
+                            <span className="text-2xs text-indigo-400">ADMIN PANEL</span>
                           </div>
-                          <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
-                            <span className="block text-slate-500">Loans</span>
-                            <span className="text-emerald-400 font-bold">29 Active</span>
+                          <div className="grid grid-cols-3 gap-1 my-1">
+                            <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
+                              <span className="block text-slate-500">Books</span>
+                              <span className="text-white font-bold">482</span>
+                            </div>
+                            <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
+                              <span className="block text-slate-500">Loans</span>
+                              <span className="text-emerald-400 font-bold">29 Active</span>
+                            </div>
+                            <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
+                              <span className="block text-slate-500">Overdue</span>
+                              <span className="text-rose-400 font-bold">3 Alert</span>
+                            </div>
                           </div>
-                          <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
-                            <span className="block text-slate-500">Overdue</span>
-                            <span className="text-rose-400 font-bold">3 Alert</span>
+                          <div className="flex items-center gap-1.5 bg-slate-900/80 px-1.5 py-1 rounded text-slate-400 border border-slate-800/50">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                            <span>GET /api/v1/catalog/search?q=informatics</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-slate-900/80 px-1.5 py-1 rounded text-slate-400 border border-slate-800/50">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                          <span>GET /api/v1/catalog/search?q=informatics</span>
-                        </div>
-                      </div>
-                    )}
+                      )}
 
-                    {proj.mockupType === 'music' && (
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <div className="absolute w-20 h-20 rounded-full border border-dashed border-indigo-500/40 animate-spin" style={{ animationDuration: '10s' }} />
-                        <div className="absolute w-14 h-14 rounded-full bg-slate-900 border border-indigo-400/40 flex items-center justify-center">
-                          <Music size={20} className="text-indigo-400 animate-float" />
+                      {proj.mockupType === 'music' && (
+                        <div className="relative w-full h-full flex items-center justify-center">
+                          <div className="absolute w-20 h-20 rounded-full border border-dashed border-indigo-500/40 animate-spin" style={{ animationDuration: '10s' }} />
+                          <div className="absolute w-14 h-14 rounded-full bg-slate-900 border border-indigo-400/40 flex items-center justify-center">
+                            <Music size={20} className="text-indigo-400 animate-float" />
+                          </div>
+                          <div className="absolute bottom-1 left-1 right-1 flex items-end justify-between px-2 text-[7px] font-mono text-indigo-300">
+                            <span>Zenith Player</span>
+                            <span>Web Audio Node: connected</span>
+                          </div>
                         </div>
-                        <div className="absolute bottom-1 left-1 right-1 flex items-end justify-between px-2 text-[7px] font-mono text-indigo-300">
-                          <span>Zenith Player</span>
-                          <span>Web Audio Node: connected</span>
-                        </div>
-                      </div>
-                    )}
+                      )}
 
-                    {proj.mockupType === 'ai' && (
-                      <div className="w-full h-full flex flex-col justify-between text-[7px] font-mono text-indigo-400 bg-slate-950 rounded p-1.5">
-                        <div className="flex items-center gap-1 border-b border-indigo-950 pb-1 text-slate-500">
-                          <Terminal size={10} />
-                          <span>python sentiment_analyzer.py --csv reviews.csv</span>
+                      {proj.mockupType === 'ai' && (
+                        <div className="w-full h-full flex flex-col justify-between text-[7px] font-mono text-indigo-400 bg-slate-950 rounded p-1.5">
+                          <div className="flex items-center gap-1 border-b border-indigo-950 pb-1 text-slate-500">
+                            <Terminal size={10} />
+                            <span>python sentiment_analyzer.py --csv reviews.csv</span>
+                          </div>
+                          <div className="space-y-1.5 my-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-slate-400">Total samples:</span>
+                              <span className="text-white">12,482</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-emerald-400">[+] Positive sentiment:</span>
+                              <span>81.2%</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-rose-400">[-] Negative sentiment:</span>
+                              <span>18.8%</span>
+                            </div>
+                          </div>
+                          <span className="text-2xs text-emerald-400">SUCCESS: accuracy=92.34% [elapsed=4.2s]</span>
                         </div>
-                        <div className="space-y-1.5 my-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-slate-400">Total samples:</span>
-                            <span className="text-white">12,482</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-emerald-400">[+] Positive sentiment:</span>
-                            <span>81.2%</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-rose-400">[-] Negative sentiment:</span>
-                            <span>18.8%</span>
-                          </div>
-                        </div>
-                        <span className="text-2xs text-emerald-400">SUCCESS: accuracy=92.34% [elapsed=4.2s]</span>
-                      </div>
-                    )}
+                      )}
 
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="font-extrabold text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors leading-snug">
+                        {language === 'ID' ? proj.title.ID : proj.title.EN}
+                      </h3>
+                      <p className="text-[11px] text-slate-400 leading-relaxed line-clamp-2 min-h-[34px]">
+                        {language === 'ID' ? proj.desc.ID : proj.desc.EN}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <h3 className="font-extrabold text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors leading-snug">
-                      {language === 'ID' ? proj.title.ID : proj.title.EN}
-                    </h3>
-                    <p className="text-[11px] text-slate-400 leading-relaxed line-clamp-2 min-h-[34px]">
-                      {language === 'ID' ? proj.desc.ID : proj.desc.EN}
-                    </p>
+                  <div className="space-y-3.5 pt-3.5 mt-3.5 border-t border-slate-950/60">
+                    <div className="flex flex-wrap gap-1">
+                      {proj.tags.map((tag) => (
+                        <span key={tag} className="px-2 py-0.5 bg-slate-950 text-slate-500 rounded font-mono text-[9px] font-semibold border border-slate-800/40">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-emerald-400/90 font-bold">{language === 'ID' ? proj.stats.ID : proj.stats.EN}</span>
+                      <button
+                        onClick={() => setSelectedProject(proj)}
+                        className="px-3.5 py-1.5 bg-slate-900 border border-slate-800/80 hover:border-emerald-500/30 hover:text-emerald-400 text-slate-300 font-bold rounded-xl text-[10px] uppercase transition-all duration-300 flex items-center gap-1.5"
+                      >
+                        <span>{t.viewDetails}</span>
+                        <ChevronRight size={12} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                <div className="space-y-3.5 pt-3.5 mt-3.5 border-t border-slate-950/60">
-                  {/* Category tags */}
-                  <div className="flex flex-wrap gap-1">
-                    {proj.tags.map((tag) => (
-                      <span key={tag} className="px-2 py-0.5 bg-slate-950 text-slate-500 rounded font-mono text-[9px] font-semibold border border-slate-800/40">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Actions buttons */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-emerald-400/90 font-bold">{language === 'ID' ? proj.stats.ID : proj.stats.EN}</span>
-                    <button
-                      onClick={() => setSelectedProject(proj)}
-                      className="px-3.5 py-1.5 bg-slate-900 border border-slate-800/80 hover:border-emerald-500/30 hover:text-emerald-400 text-slate-300 font-bold rounded-xl text-[10px] uppercase transition-all duration-300 flex items-center gap-1.5"
-                    >
-                      <span>{t.viewDetails}</span>
-                      <ChevronRight size={12} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ── SECTION 5: CONTACT ── */}
         <section id="contact" className="py-16 md:py-24 border-t border-slate-900/60 reveal-on-scroll">
-          <div className="max-w-4xl mx-auto space-y-12">
+          <div className="max-w-4xl mx-auto space-y-10">
             
             <div className="space-y-3 text-center max-w-2xl mx-auto">
               <span className="text-xs font-mono font-semibold tracking-widest text-emerald-400 uppercase block">{t.contactSmall}</span>
@@ -1215,152 +1118,69 @@ export default function App() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            {/* Centered layout with contact cards only (No input forms, as requested) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
               
-              {/* Contact Cards Grid (5 cols) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4 md:col-span-5">
-                <a href="https://wa.me/6281385280346" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-emerald-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
-                  <div className="flex items-center space-x-3.5 min-w-0">
-                    <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl flex-shrink-0 border border-emerald-500/15">
-                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 12.008 0c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 12.004-11.95 12.004-.003 0-.005 0-.007 0-2.005-.001-3.975-.51-5.729-1.479L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.966C16.528 1.975 14.061 1.95 11.43 1.95c-5.438 0-9.863 4.374-9.867 9.802 0 1.714.475 3.393 1.374 4.869l-.997 3.64 3.734-.967z" />
-                      </svg>
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-white text-xs sm:text-sm font-bold">WhatsApp</h4>
-                      <span className="text-emerald-400 text-2xs font-mono truncate block">ZURA RAHMAT</span>
-                    </div>
+              <a href="https://wa.me/6281385280346" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-emerald-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
+                <div className="flex items-center space-x-3.5 min-w-0">
+                  <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl flex-shrink-0 border border-emerald-500/15">
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 12.008 0c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 12.004-11.95 12.004-.003 0-.005 0-.007 0-2.005-.001-3.975-.51-5.729-1.479L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.966C16.528 1.975 14.061 1.95 11.43 1.95c-5.438 0-9.863 4.374-9.867 9.802 0 1.714.475 3.393 1.374 4.869l-.997 3.64 3.734-.967z" />
+                    </svg>
                   </div>
-                  <ChevronRight size={16} className="text-slate-500 group-hover:text-emerald-400 flex-shrink-0 ml-2" />
-                </a>
-
-                <a href="https://instagram.com/has.fallenz" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-pink-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
-                  <div className="flex items-center space-x-3.5 min-w-0">
-                    <div className="p-3 bg-pink-500/10 text-pink-400 rounded-xl flex-shrink-0 border border-pink-500/15">
-                      <Instagram size={18} />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-white text-xs sm:text-sm font-bold">Instagram</h4>
-                      <span className="text-pink-400 text-2xs font-mono">@has.fallenz</span>
-                    </div>
+                  <div className="min-w-0">
+                    <h4 className="text-white text-xs sm:text-sm font-bold">WhatsApp</h4>
+                    <span className="text-emerald-400 text-2xs font-mono truncate block">ZURA RAHMAT</span>
                   </div>
-                  <ChevronRight size={16} className="text-slate-500 group-hover:text-pink-400 flex-shrink-0 ml-2" />
-                </a>
-
-                <div className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-indigo-500/20 transition-all duration-300 shadow-md">
-                  <div className="flex items-center space-x-3.5 min-w-0 flex-1 mr-2">
-                    <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl flex-shrink-0 border border-indigo-500/15">
-                      <Mail size={18} />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-white text-xs sm:text-sm font-bold">Email</h4>
-                      <span className="text-indigo-400 text-2xs font-mono block truncate">hasfallenz12@gmail.com</span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleCopy('hasfallenz12@gmail.com', 'email')}
-                    className="text-2xs font-mono bg-slate-950 border border-slate-800 hover:border-indigo-500/30 px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all active:scale-95 flex-shrink-0"
-                  >
-                    {copiedText === 'email' ? t.copied : t.copy}
-                  </button>
                 </div>
+                <ChevronRight size={16} className="text-slate-500 group-hover:text-emerald-400 flex-shrink-0 ml-2" />
+              </a>
 
-                <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-blue-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
-                  <div className="flex items-center space-x-3.5 min-w-0">
-                    <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl flex-shrink-0 border border-blue-500/15">
-                      <Linkedin size={18} />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-white text-xs sm:text-sm font-bold">LinkedIn</h4>
-                      <span className="text-blue-400 text-2xs font-mono">Zufa Rahmat Ramadhan</span>
-                    </div>
+              <a href="https://instagram.com/has.fallenz" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-pink-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
+                <div className="flex items-center space-x-3.5 min-w-0">
+                  <div className="p-3 bg-pink-500/10 text-pink-400 rounded-xl flex-shrink-0 border border-pink-500/15">
+                    <Instagram size={18} />
                   </div>
-                  <ChevronRight size={16} className="text-slate-500 group-hover:text-blue-400 flex-shrink-0 ml-2" />
-                </a>
+                  <div className="min-w-0">
+                    <h4 className="text-white text-xs sm:text-sm font-bold">Instagram</h4>
+                    <span className="text-pink-400 text-2xs font-mono">@has.fallenz</span>
+                  </div>
+                </div>
+                <ChevronRight size={16} className="text-slate-500 group-hover:text-pink-400 flex-shrink-0 ml-2" />
+              </a>
+
+              <div className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-indigo-500/20 transition-all duration-300 shadow-md">
+                <div className="flex items-center space-x-3.5 min-w-0 flex-1 mr-2">
+                  <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl flex-shrink-0 border border-indigo-500/15">
+                    <Mail size={18} />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="text-white text-xs sm:text-sm font-bold">Email</h4>
+                    <span className="text-indigo-400 text-2xs font-mono block truncate">hasfallenz12@gmail.com</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleCopy('hasfallenz12@gmail.com', 'email')}
+                  className="text-2xs font-mono bg-slate-950 border border-slate-800 hover:border-indigo-500/30 px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all active:scale-95 flex-shrink-0"
+                >
+                  {copiedText === 'email' ? t.copied : t.copy}
+                </button>
               </div>
 
-              {/* Interactive Contact Form Container (7 cols) */}
-              <div className="md:col-span-7 bg-slate-900/30 border border-slate-900/90 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-
-                {contactSubmitStatus === 'success' ? (
-                  <div className="text-center py-6 space-y-4 animate-float">
-                    <div className="w-14 h-14 bg-emerald-500/15 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30 shadow-lg">
-                      <Check size={28} />
-                    </div>
-                    <h3 className="text-lg font-black text-white">{t.contactSuccessTitle}</h3>
-                    <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">{t.contactSuccessDesc}</p>
-                    
-                    {contactSuccessData && (
-                      <div className="bg-slate-950/80 border border-slate-900 rounded-2xl p-4 text-left text-xs space-y-2 mt-4 max-w-md mx-auto">
-                        <div className="flex items-center justify-between text-2xs text-slate-500 border-b border-slate-900 pb-1.5 font-mono">
-                          <span>ID: {contactSuccessData.id}</span>
-                          <span>{contactSuccessData.date}</span>
-                        </div>
-                        <p className="text-slate-300"><strong className="text-slate-500 font-mono">From:</strong> {contactSuccessData.name} ({contactSuccessData.email})</p>
-                        <p className="text-slate-400 italic">"{contactSuccessData.message}"</p>
-                      </div>
-                    )}
-
-                    <button 
-                      onClick={() => setContactSubmitStatus('idle')}
-                      className="px-6 py-2 bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-slate-700 text-slate-300 font-bold rounded-xl text-xs uppercase transition-all duration-300"
-                    >
-                      Kirim Pesan Lain
-                    </button>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-800 rounded-2xl hover:border-blue-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
+                <div className="flex items-center space-x-3.5 min-w-0">
+                  <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl flex-shrink-0 border border-blue-500/15">
+                    <Linkedin size={18} />
                   </div>
-                ) : (
-                  <form onSubmit={handleContactSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-2xs font-mono font-bold text-slate-400 uppercase tracking-wider">Nama</label>
-                        <input
-                          type="text"
-                          required
-                          value={contactForm.name}
-                          onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
-                          placeholder={t.contactNamePlaceholder}
-                          className="w-full bg-slate-950 border border-slate-850/80 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-400/50 transition-colors"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-2xs font-mono font-bold text-slate-400 uppercase tracking-wider">Email</label>
-                        <input
-                          type="email"
-                          required
-                          value={contactForm.email}
-                          onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
-                          placeholder={t.contactEmailPlaceholder}
-                          className="w-full bg-slate-950 border border-slate-850/80 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-400/50 transition-colors"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-2xs font-mono font-bold text-slate-400 uppercase tracking-wider">Pesan Anda</label>
-                      <textarea
-                        required
-                        rows="4"
-                        value={contactForm.message}
-                        onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
-                        placeholder={t.contactMessagePlaceholder}
-                        className="w-full bg-slate-950 border border-slate-850/80 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-400/50 transition-colors resize-none"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={contactSubmitStatus === 'sending'}
-                      className="w-full py-3.5 bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-widest shadow-lg shadow-emerald-400/10 hover:shadow-emerald-400/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {contactSubmitStatus === 'sending' ? t.contactSendingBtn : t.contactSubmitBtn}
-                    </button>
-                  </form>
-                )}
-              </div>
+                  <div className="min-w-0">
+                    <h4 className="text-white text-xs sm:text-sm font-bold">LinkedIn</h4>
+                    <span className="text-blue-400 text-2xs font-mono">Zufa Rahmat Ramadhan</span>
+                  </div>
+                </div>
+                <ChevronRight size={16} className="text-slate-500 group-hover:text-blue-400 flex-shrink-0 ml-2" />
+              </a>
 
             </div>
-
           </div>
         </section>
 
