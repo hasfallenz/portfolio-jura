@@ -40,6 +40,8 @@ const greetings = [
 
 const techSkills = [
   { name: "React", color: "#61DAFB", level: "Intermediate", desc: "Membangun SPA interaktif dengan Hook dan State." },
+  { name: "Astro.js", color: "#FF5D01", level: "Intermediate", desc: "Membangun website statis & SSR yang ultra cepat." },
+  { name: "Sanity CMS", color: "#F04336", level: "Intermediate", desc: "Mengelola konten headless CMS secara real-time." },
   { name: "Laravel", color: "#FF2D20", level: "Intermediate", desc: "Membuat REST API dan backend server MVC." },
   { name: "Python", color: "#3776AB", level: "Beginner", desc: "Mengembangkan script otomasi dan pemrosesan data." },
   { name: "Next.js", color: "#FFFFFF", level: "Beginner", desc: "Mempelajari rendering SSR & SSG untuk SEO." },
@@ -47,7 +49,32 @@ const techSkills = [
   { name: "Node.js", color: "#8CC84B", level: "Beginner", desc: "Membuat REST API backend sederhana." },
 ];
 
-const projectsData = [];
+const projectsData = [
+  {
+    id: 'barwice-cafe',
+    title: {
+      ID: 'Barwice Cafe',
+      EN: 'Barwice Cafe'
+    },
+    desc: {
+      ID: 'Website modern Barwice Cafe dengan integrasi Headless CMS untuk manajemen konten real-time.',
+      EN: 'Modern website for Barwice Cafe with Headless CMS integration for real-time content management.'
+    },
+    longDesc: {
+      ID: 'Proyek website resmi untuk Barwice Cafe. Dibangun menggunakan Astro.js untuk kecepatan loading maksimal dan SEO optimal, serta diintegrasikan dengan Sanity CMS agar tim cafe dapat memperbarui menu, promo, dan informasi terbaru secara fleksibel.',
+      EN: 'Official website project for Barwice Cafe. Engineered using Astro.js for blazing-fast loading speeds and optimal SEO, integrated with Sanity CMS enabling cafe staff to dynamically update menus, offers, and announcements.'
+    },
+    category: 'Astro',
+    image: '/barwice-cafe.png',
+    tags: ['Astro.js', 'Sanity CMS', 'Tailwind CSS', 'Vercel'],
+    stats: {
+      ID: 'Live Website',
+      EN: 'Live Website'
+    },
+    githubUrl: 'https://github.com/hasfallenz',
+    demoUrl: 'https://barwice-cafe.vercel.app'
+  }
+];
 const certificatesData = [];
 
 const translations = {
@@ -174,6 +201,18 @@ const getSkillIcon = (name) => {
             <ellipse rx="11" ry="4.2" transform="rotate(60)" />
             <ellipse rx="11" ry="4.2" transform="rotate(120)" />
           </g>
+        </svg>
+      );
+    case 'Astro.js':
+      return (
+        <svg viewBox="0 0 24 24" className="w-10 h-10 sm:w-12 sm:h-12 text-[#FF5D01] fill-current transition-transform duration-500 group-hover:scale-110">
+          <path d="M19.305 15.003c-.991-.355-2.071.144-2.426 1.136-.356.991.144 2.071 1.136 2.426.991.356 2.071-.144 2.426-1.136.355-.992-.145-2.071-1.136-2.426zm-14.61 0c-.991.355-1.491 1.434-1.136 2.426.355.992 1.435 1.492 2.426 1.136.992-.355 1.492-1.435 1.136-2.426-.355-.992-1.435-1.491-2.426-1.136zM12 2C6.477 2 2 6.477 2 12c0 2.236.734 4.302 1.975 5.975l2.67-4.153C6.237 13.11 6 12.075 6 11c0-3.314 2.686-6 6-6s6 2.686 6 6c0 1.075-.237 2.11-.645 2.822l2.67 4.153C21.266 16.302 22 14.236 22 12c0-5.523-4.477-10-10-10zm0 4a5 5 0 100 10 5 5 0 000-10z" />
+        </svg>
+      );
+    case 'Sanity CMS':
+      return (
+        <svg viewBox="0 0 24 24" className="w-10 h-10 sm:w-12 sm:h-12 text-[#F04336] fill-current transition-transform duration-500 group-hover:scale-110">
+          <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.8L19.2 8 12 11.2 4.8 8 12 4.8zM4 9.6l7 3.5v7.1l-7-3.5V9.6zm9 10.6v-7.1l7-3.5v7.1l-7 3.5z" />
         </svg>
       );
     case 'Laravel':
@@ -592,7 +631,7 @@ export default function App() {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div className="space-y-1.5">
-                <span className="block text-2xl sm:text-3xl font-black text-emerald-400 font-mono">0</span>
+                <span className="block text-2xl sm:text-3xl font-black text-emerald-400 font-mono">{projectsData.length}</span>
                 <span className="block text-xs text-slate-400 font-semibold">{t.statsProjects}</span>
               </div>
               <div className="space-y-1.5 md:border-l md:border-slate-800/60">
@@ -839,7 +878,7 @@ export default function App() {
               
               {isFilterDropdownOpen && (
                 <div className="absolute right-1/2 translate-x-1/2 sm:translate-x-0 sm:right-0 mt-2 w-[160px] bg-slate-900 border border-slate-800/80 rounded-2xl shadow-2xl py-1.5 animate-fade-in border-slate-800">
-                  {['All', 'React', 'Laravel', 'Python'].map((cat) => (
+                  {['All', 'Astro', 'React', 'Laravel', 'Python'].map((cat) => (
                     <button
                       key={cat}
                       onClick={() => {
@@ -876,73 +915,81 @@ export default function App() {
                   className="group bg-slate-900/30 border border-slate-900 hover:border-slate-800 rounded-2xl p-4.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-xl hover:shadow-black/45"
                 >
                   <div>
-                    {/* Visual mockup graphics */}
-                    <div className="w-full h-36 bg-slate-950 rounded-xl mb-4 overflow-hidden border border-slate-800/60 relative flex flex-col items-center justify-center p-3 select-none">
-                      
-                      {proj.mockupType === 'library' && (
-                        <div className="w-full h-full flex flex-col justify-between text-[8px] font-mono text-emerald-400">
-                          <div className="flex items-center justify-between border-b border-emerald-950 pb-1">
-                            <span>📦 BookVerse v1.0</span>
-                            <span className="text-2xs text-indigo-400">ADMIN PANEL</span>
-                          </div>
-                          <div className="grid grid-cols-3 gap-1 my-1">
-                            <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
-                              <span className="block text-slate-500">Books</span>
-                              <span className="text-white font-bold">482</span>
+                    {/* Visual mockup graphics / image */}
+                    <div className="w-full h-44 bg-slate-950 rounded-xl mb-4 overflow-hidden border border-slate-800/60 relative flex flex-col items-center justify-center select-none group-hover:border-emerald-500/30 transition-colors">
+                      {proj.image ? (
+                        <img
+                          src={proj.image}
+                          alt={language === 'ID' ? proj.title.ID : proj.title.EN}
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="p-3 w-full h-full flex flex-col items-center justify-center">
+                          {proj.mockupType === 'library' && (
+                            <div className="w-full h-full flex flex-col justify-between text-[8px] font-mono text-emerald-400">
+                              <div className="flex items-center justify-between border-b border-emerald-950 pb-1">
+                                <span>📦 BookVerse v1.0</span>
+                                <span className="text-2xs text-indigo-400">ADMIN PANEL</span>
+                              </div>
+                              <div className="grid grid-cols-3 gap-1 my-1">
+                                <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
+                                  <span className="block text-slate-500">Books</span>
+                                  <span className="text-white font-bold">482</span>
+                                </div>
+                                <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
+                                  <span className="block text-slate-500">Loans</span>
+                                  <span className="text-emerald-400 font-bold">29 Active</span>
+                                </div>
+                                <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
+                                  <span className="block text-slate-500">Overdue</span>
+                                  <span className="text-rose-400 font-bold">3 Alert</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-slate-900/80 px-1.5 py-1 rounded text-slate-400 border border-slate-800/50">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                                <span>GET /api/v1/catalog/search?q=informatics</span>
+                              </div>
                             </div>
-                            <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
-                              <span className="block text-slate-500">Loans</span>
-                              <span className="text-emerald-400 font-bold">29 Active</span>
+                          )}
+
+                          {proj.mockupType === 'music' && (
+                            <div className="relative w-full h-full flex items-center justify-center">
+                              <div className="absolute w-20 h-20 rounded-full border border-dashed border-indigo-500/40 animate-spin" style={{ animationDuration: '10s' }} />
+                              <div className="absolute w-14 h-14 rounded-full bg-slate-900 border border-indigo-400/40 flex items-center justify-center">
+                                <Music size={20} className="text-indigo-400 animate-float" />
+                              </div>
+                              <div className="absolute bottom-1 left-1 right-1 flex items-end justify-between px-2 text-[7px] font-mono text-indigo-300">
+                                <span>Zenith Player</span>
+                                <span>Web Audio Node: connected</span>
+                              </div>
                             </div>
-                            <div className="bg-slate-900/60 p-1 rounded border border-slate-800/50">
-                              <span className="block text-slate-500">Overdue</span>
-                              <span className="text-rose-400 font-bold">3 Alert</span>
+                          )}
+
+                          {proj.mockupType === 'ai' && (
+                            <div className="w-full h-full flex flex-col justify-between text-[7px] font-mono text-indigo-400 bg-slate-950 rounded p-1.5">
+                              <div className="flex items-center gap-1 border-b border-indigo-950 pb-1 text-slate-500">
+                                <Terminal size={10} />
+                                <span>python sentiment_analyzer.py --csv reviews.csv</span>
+                              </div>
+                              <div className="space-y-1.5 my-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-slate-400">Total samples:</span>
+                                  <span className="text-white">12,482</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-emerald-400">[+] Positive sentiment:</span>
+                                  <span>81.2%</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-rose-400">[-] Negative sentiment:</span>
+                                  <span>18.8%</span>
+                                </div>
+                              </div>
+                              <span className="text-2xs text-emerald-400">SUCCESS: accuracy=92.34% [elapsed=4.2s]</span>
                             </div>
-                          </div>
-                          <div className="flex items-center gap-1.5 bg-slate-900/80 px-1.5 py-1 rounded text-slate-400 border border-slate-800/50">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                            <span>GET /api/v1/catalog/search?q=informatics</span>
-                          </div>
+                          )}
                         </div>
                       )}
-
-                      {proj.mockupType === 'music' && (
-                        <div className="relative w-full h-full flex items-center justify-center">
-                          <div className="absolute w-20 h-20 rounded-full border border-dashed border-indigo-500/40 animate-spin" style={{ animationDuration: '10s' }} />
-                          <div className="absolute w-14 h-14 rounded-full bg-slate-900 border border-indigo-400/40 flex items-center justify-center">
-                            <Music size={20} className="text-indigo-400 animate-float" />
-                          </div>
-                          <div className="absolute bottom-1 left-1 right-1 flex items-end justify-between px-2 text-[7px] font-mono text-indigo-300">
-                            <span>Zenith Player</span>
-                            <span>Web Audio Node: connected</span>
-                          </div>
-                        </div>
-                      )}
-
-                      {proj.mockupType === 'ai' && (
-                        <div className="w-full h-full flex flex-col justify-between text-[7px] font-mono text-indigo-400 bg-slate-950 rounded p-1.5">
-                          <div className="flex items-center gap-1 border-b border-indigo-950 pb-1 text-slate-500">
-                            <Terminal size={10} />
-                            <span>python sentiment_analyzer.py --csv reviews.csv</span>
-                          </div>
-                          <div className="space-y-1.5 my-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-slate-400">Total samples:</span>
-                              <span className="text-white">12,482</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-emerald-400">[+] Positive sentiment:</span>
-                              <span>81.2%</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-rose-400">[-] Negative sentiment:</span>
-                              <span>18.8%</span>
-                            </div>
-                          </div>
-                          <span className="text-2xs text-emerald-400">SUCCESS: accuracy=92.34% [elapsed=4.2s]</span>
-                        </div>
-                      )}
-
                     </div>
 
                     <div className="space-y-2">
@@ -993,66 +1040,66 @@ export default function App() {
               </p>
             </div>
 
-            {/* Centered layout with contact cards only */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
+            {/* Centered layout with 3 clean contact cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto w-full">
               
-              <a href="https://wa.me/6281385280346" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-emerald-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
-                <div className="flex items-center space-x-3.5 min-w-0">
-                  <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl flex-shrink-0 border border-emerald-500/15">
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 12.008 0c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 12.004-11.95 12.004-.003 0-.005 0-.007 0-2.005-.001-3.975-.51-5.729-1.479L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.966C16.528 1.975 14.061 1.95 11.43 1.95c-5.438 0-9.863 4.374-9.867 9.802 0 1.714.475 3.393 1.374 4.869l-.997 3.64 3.734-.967z" />
-                    </svg>
+              <a href="https://instagram.com/has.fallenz" target="_blank" rel="noreferrer" className="flex flex-col justify-between p-6 bg-slate-900/40 border border-slate-900 hover:border-pink-500/30 rounded-2xl transition-all duration-300 group shadow-lg hover:shadow-pink-500/5 hover:-translate-y-1">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="p-3 bg-pink-500/10 text-pink-400 rounded-xl border border-pink-500/20">
+                      <Instagram size={22} />
+                    </div>
+                    <ChevronRight size={18} className="text-slate-600 group-hover:text-pink-400 transition-colors" />
                   </div>
-                  <div className="min-w-0">
-                    <h4 className="text-white text-xs sm:text-sm font-bold">WhatsApp</h4>
-                    <span className="text-emerald-400 text-2xs font-mono truncate block">ZUFA RAHMAT RAMADHAN</span>
+                  <div>
+                    <h4 className="text-white text-base font-bold">Instagram</h4>
+                    <p className="text-slate-400 text-xs mt-0.5">DM atau ikuti aktivitas harian saya</p>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-slate-500 group-hover:text-emerald-400 flex-shrink-0 ml-2" />
+                <div className="pt-4 mt-4 border-t border-slate-900/80">
+                  <span className="text-pink-400 text-xs font-mono font-semibold">@has.fallenz</span>
+                </div>
               </a>
 
-              <a href="https://instagram.com/has.fallenz" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-pink-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
-                <div className="flex items-center space-x-3.5 min-w-0">
-                  <div className="p-3 bg-pink-500/10 text-pink-400 rounded-xl flex-shrink-0 border border-pink-500/15">
-                    <Instagram size={18} />
+              <div className="flex flex-col justify-between p-6 bg-slate-900/40 border border-slate-900 hover:border-indigo-500/30 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-indigo-500/5 hover:-translate-y-1">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
+                      <Mail size={22} />
+                    </div>
+                    <button
+                      onClick={() => handleCopy('hasfallenz12@gmail.com', 'email')}
+                      className="text-xs font-mono bg-slate-950 border border-slate-800 hover:border-indigo-500/40 px-3 py-1.5 rounded-xl text-slate-300 hover:text-white transition-all active:scale-95"
+                    >
+                      {copiedText === 'email' ? t.copied : t.copy}
+                    </button>
                   </div>
-                  <div className="min-w-0">
-                    <h4 className="text-white text-xs sm:text-sm font-bold">Instagram</h4>
-                    <span className="text-pink-400 text-2xs font-mono">@has.fallenz</span>
-                  </div>
-                </div>
-                <ChevronRight size={16} className="text-slate-500 group-hover:text-pink-400 flex-shrink-0 ml-2" />
-              </a>
-
-              <div className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-900 rounded-2xl hover:border-indigo-500/20 transition-all duration-300 shadow-md">
-                <div className="flex items-center space-x-3.5 min-w-0 flex-1 mr-2">
-                  <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl flex-shrink-0 border border-indigo-500/15">
-                    <Mail size={18} />
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="text-white text-xs sm:text-sm font-bold">Email</h4>
-                    <span className="text-indigo-400 text-2xs font-mono block truncate">hasfallenz12@gmail.com</span>
+                  <div>
+                    <h4 className="text-white text-base font-bold">Email</h4>
+                    <p className="text-slate-400 text-xs mt-0.5">Kirim pesan resmi atau penawaran kerja</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleCopy('hasfallenz12@gmail.com', 'email')}
-                  className="text-2xs font-mono bg-slate-950 border border-slate-800 hover:border-indigo-500/30 px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all active:scale-95 flex-shrink-0"
-                >
-                  {copiedText === 'email' ? t.copied : t.copy}
-                </button>
+                <div className="pt-4 mt-4 border-t border-slate-900/80">
+                  <span className="text-indigo-400 text-xs font-mono font-semibold truncate block">hasfallenz12@gmail.com</span>
+                </div>
               </div>
 
-              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4.5 bg-slate-900/30 border border-slate-800 rounded-2xl hover:border-blue-500/20 transition-all duration-300 group shadow-md hover:shadow-lg">
-                <div className="flex items-center space-x-3.5 min-w-0">
-                  <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl flex-shrink-0 border border-blue-500/15">
-                    <Linkedin size={18} />
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex flex-col justify-between p-6 bg-slate-900/40 border border-slate-900 hover:border-blue-500/30 rounded-2xl transition-all duration-300 group shadow-lg hover:shadow-blue-500/5 hover:-translate-y-1">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
+                      <Linkedin size={22} />
+                    </div>
+                    <ChevronRight size={18} className="text-slate-600 group-hover:text-blue-400 transition-colors" />
                   </div>
-                  <div className="min-w-0">
-                    <h4 className="text-white text-xs sm:text-sm font-bold">LinkedIn</h4>
-                    <span className="text-blue-400 text-2xs font-mono">Zufa Rahmat Ramadhan</span>
+                  <div>
+                    <h4 className="text-white text-base font-bold">LinkedIn</h4>
+                    <p className="text-slate-400 text-xs mt-0.5">Terhubung secara profesional</p>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-slate-500 group-hover:text-blue-400 flex-shrink-0 ml-2" />
+                <div className="pt-4 mt-4 border-t border-slate-900/80">
+                  <span className="text-blue-400 text-xs font-mono font-semibold">Zufa Rahmat Ramadhan</span>
+                </div>
               </a>
 
             </div>
@@ -1071,20 +1118,44 @@ export default function App() {
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative animate-float">
             
             {/* Modal header/cover visual */}
-            <div className="h-28 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-indigo-500/20 border-b border-slate-800 flex items-center justify-between p-6">
-              <div>
-                <span className="text-[9px] font-mono font-bold text-emerald-400 bg-slate-950 px-2 py-0.5 rounded-full uppercase tracking-wider">{selectedProject.category} Project</span>
-                <h3 className="font-extrabold text-white text-base sm:text-lg tracking-wide leading-snug mt-1">
-                  {language === 'ID' ? selectedProject.title.ID : selectedProject.title.EN}
-                </h3>
+            {selectedProject.image ? (
+              <div className="w-full h-52 bg-slate-950 relative border-b border-slate-800">
+                <img 
+                  src={selectedProject.image} 
+                  alt={language === 'ID' ? selectedProject.title.ID : selectedProject.title.EN} 
+                  className="w-full h-full object-cover object-top"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent p-6 flex flex-col justify-end">
+                  <span className="text-[9px] font-mono font-bold text-emerald-400 bg-slate-950/80 w-max px-2.5 py-1 rounded-full uppercase tracking-wider mb-1 border border-emerald-500/20">
+                    {selectedProject.category} Project
+                  </span>
+                  <h3 className="font-extrabold text-white text-base sm:text-xl tracking-wide leading-snug">
+                    {language === 'ID' ? selectedProject.title.ID : selectedProject.title.EN}
+                  </h3>
+                </div>
+                <button 
+                  onClick={() => setSelectedProject(null)}
+                  className="absolute top-4 right-4 p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition-colors z-10"
+                >
+                  <X size={16} />
+                </button>
               </div>
-              <button 
-                onClick={() => setSelectedProject(null)}
-                className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-850 hover:border-slate-700 text-slate-400 hover:text-white transition-colors"
-              >
-                <X size={16} />
-              </button>
-            </div>
+            ) : (
+              <div className="h-28 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-indigo-500/20 border-b border-slate-800 flex items-center justify-between p-6">
+                <div>
+                  <span className="text-[9px] font-mono font-bold text-emerald-400 bg-slate-950 px-2 py-0.5 rounded-full uppercase tracking-wider">{selectedProject.category} Project</span>
+                  <h3 className="font-extrabold text-white text-base sm:text-lg tracking-wide leading-snug mt-1">
+                    {language === 'ID' ? selectedProject.title.ID : selectedProject.title.EN}
+                  </h3>
+                </div>
+                <button 
+                  onClick={() => setSelectedProject(null)}
+                  className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-850 hover:border-slate-700 text-slate-400 hover:text-white transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
 
             {/* Modal Content */}
             <div className="p-6 space-y-4 text-xs">
