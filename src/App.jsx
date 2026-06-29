@@ -552,7 +552,7 @@ export default function App() {
       </nav>
 
       {/* MAIN CONTAINER */}
-      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-24 md:pt-28">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28">
 
         {/* ── SECTION 1: HOME ── */}
         <section id="home" className="min-h-[85vh] flex flex-col md:flex-row items-center justify-center md:justify-between py-8 md:py-12 gap-10 md:gap-12 reveal-on-scroll">
@@ -625,7 +625,7 @@ export default function App() {
 
         {/* ── STATS COUNTER ── */}
         <section className="py-10 border-t border-slate-900/60 reveal-on-scroll">
-          <div className="glass-panel rounded-3xl p-6 sm:p-8 max-w-4xl mx-auto shadow-2xl relative overflow-hidden">
+          <div className="glass-panel rounded-3xl p-6 sm:p-8 max-w-6xl mx-auto shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
             <h3 className="text-xs font-mono font-bold tracking-widest text-slate-500 uppercase text-center mb-6">{t.statsTitle}</h3>
             
@@ -717,7 +717,7 @@ export default function App() {
               <p className="text-slate-500 text-xs mt-2">{t.techDesc}</p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 max-w-4xl mx-auto px-2 sm:px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 max-w-6xl mx-auto px-2 sm:px-4">
               {techSkills.map((skill) => (
                 <div
                   key={skill.name}
@@ -815,7 +815,7 @@ export default function App() {
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white">{t.expTitle}</h2>
           </div>
 
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto space-y-6">
             <div className="border-l-2 border-slate-900 pl-6 ml-2 space-y-8 relative">
               
               {/* College Project Timeline item */}
@@ -1030,7 +1030,7 @@ export default function App() {
 
         {/* ── SECTION 5: CONTACT ── */}
         <section id="contact" className="py-16 md:py-24 border-t border-slate-900/60 reveal-on-scroll">
-          <div className="max-w-4xl mx-auto space-y-10">
+          <div className="max-w-6xl mx-auto space-y-10">
             
             <div className="space-y-3 text-center max-w-2xl mx-auto">
               <span className="text-xs font-mono font-semibold tracking-widest text-emerald-400 uppercase block">{t.contactSmall}</span>
@@ -1041,7 +1041,7 @@ export default function App() {
             </div>
 
             {/* Centered layout with 3 clean contact cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto w-full">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-6xl mx-auto w-full">
               
               <a href="https://instagram.com/has.fallenz" target="_blank" rel="noreferrer" className="flex flex-col justify-between p-6 bg-slate-900/40 border border-slate-900 hover:border-pink-500/30 rounded-2xl transition-all duration-300 group shadow-lg hover:shadow-pink-500/5 hover:-translate-y-1">
                 <div className="space-y-4">
